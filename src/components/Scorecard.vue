@@ -1,8 +1,21 @@
 <template>
   <div>
-
+    <table v-if="playerIds.length">
+      <thead>
+        <th>Name</th>
+        <th colspan="15">Score</th>
+      </thead>
+      <tr v-for="playerId in playerIds" v-bind:key="playerId">
+        <td>{{playerId}}</td>
+        <td v-for="Q in playerQuestions(playerId)" v-bind:key="Q.id" v-bind:colspan="getPlayerAnswer(Q, playerId)._score">
+          <font-awesome-icon :icon="['fas', 'check-circle']" />
+        </td>
+        <td v-for="gap in pointsRemaining(playerId)" v-bind:key="gap.id">
+          <font-awesome-icon :icon="['fas', 'circle']" />
+        </td>
+      </tr>
+    </table>
   </div>
-
 </template>
 
 <script>
@@ -15,11 +28,13 @@ export default {
     }
   },
   computed: {
-    players: function() {
-      const players = new Set();
+    playerIds: function() {
+      console.log(this.questions)
+      let players = new Set();
       this.questions.forEach(q => {
-        q.answers.forEach(a => players.add(a.playerId));
+        q.answers.forEach(a => players = players.add(a.playerId));
       });
+      console.log(Array.from(players))
       return [...players];
     }
   },
@@ -37,14 +52,28 @@ export default {
     }
   },
   methods: {
-    lockInAnswer() {
-      console.log('lockInAnswer')
-      if(!this.okay || this.locked) {
-        return;
-      }
-      console.log({min:this.min, max:this.max})
-      this.$socket.client.emit('sendAnswer', {min: this.min, max: this.max});
-      this.locked = true;
+    playerQuestions(playerId) {
+      return this.questions.filter(q => {
+        let iAnswered = false;
+        q.answers.forEach(a => {
+          if(a.playerId === playerId)
+            iAnswered = true;
+        });
+        return iAnswered;
+      });
+    },
+    getPlayerAnswer(question, playerId) {
+      console.log({question, playerId, score: question.answers.filter(a => a.playerId === playerId)[0].answer._score})
+      const Q = question.answers.filter(a => a.playerId === playerId);
+      return Q.length? Q[0] : {_score: 0};
+    },
+    pointsRemaining(playerId) {
+      const me = this;
+      const Qs = this.playerQuestions(playerId);
+      let sum = 0;
+      Qs.forEach(q => sum += me.getPlayerAnswer(q, playerId).answer._score);
+      console.log(`Player ${playerId} score = ${sum}`)
+      return 15 - sum;
     }
   }
 }
