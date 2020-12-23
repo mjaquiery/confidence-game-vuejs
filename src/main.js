@@ -8,10 +8,10 @@ const socket = io('http://localhost:3000');
 Vue.use(VueSocketIOExt, socket);
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faLock, faUnlock, faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons'
+import { faLock, faUnlock, faCheck, faCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faLock, faUnlock, faCheckCircle, faCircle)
+library.add(faLock, faUnlock, faCheck, faCircle)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false

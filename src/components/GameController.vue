@@ -1,13 +1,18 @@
 <template>
   <div class="wrapper">
-    <h1>{{ msg }}</h1>
-    <h3>{{ gameState }}</h3>
+    <h3>{{ gameState.gameState }}</h3>
     <div class="game">
       <Question></Question>
-      <Answer></Answer>
+      <Answer v-if="gameState.gameState !== 'results'"></Answer>
+      <Reveal
+              v-if="gameState.gameState === 'results'"
+              v-bind:playerId="playerId"
+              v-bind:question="gameState.questions[gameState.questions.length - 1]"
+              v-bind:players="gameState.players">
+      </Reveal>
     </div>
     <div class="scorecard">
-      <Scorecard></Scorecard>
+      <Scorecard v-bind:playerId="playerId"></Scorecard>
     </div>
   </div>
 </template>
@@ -16,9 +21,10 @@
   import Question from "@/components/Question";
   import Answer from "@/components/Answer";
   import Scorecard from "@/components/Scorecard";
+  import Reveal from "@/components/Reveal";
 export default {
   name: 'GameController',
-  components: {Question, Answer, Scorecard},
+  components: {Question, Answer, Scorecard, Reveal},
   props: {
     msg: String,
     messages: {
@@ -28,7 +34,8 @@ export default {
   },
   data: () => {
     return {
-      gameState: 'connecting'
+      gameState: 'connecting',
+      playerId: null
     }
   },
   sockets: {
@@ -41,41 +48,37 @@ export default {
     },
     gameState(newGameState) {
       this.gameState = newGameState;
+      console.log({[newGameState.gameState]: newGameState})
     },
-    chatMessage(val) {
-      console.log({chatMessage: val});
-      this.messages.push({id: this.messages.length, text: val});
+    yourPlayerId(id) {
+      this.playerId = id;
     }
   },
-  methods: {
-    clickButton(val) {
-      // this.$socket.client is `socket.io-client` instance
-      this.$socket.client.emit('chatMessage', val);
-    }
-  }
+  methods: {}
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
   .wrapper {
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    width: fit-content;
+    display: grid;
+    grid-auto-flow: row;
+    grid-template-rows: 1fr;
+    grid-row-gap: 0.5em;
+    align-items: center;
+    justify-content: center;
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
   }
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
+  .game {
+    > * {
+      margin: 1em 0;
+      &:first-child {margin-top: 0;}
+      &:last-child {margin-bottom: 0;}
+    }
+  }
 </style>

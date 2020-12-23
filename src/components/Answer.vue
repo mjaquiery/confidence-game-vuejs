@@ -50,7 +50,7 @@ export default {
   sockets: {
     newPrompt(text) {this.prompt = text;},
     gameState(gs) {
-      if(gs === 'round start') {
+      if(gs.gameState === 'round start') {
         this.locked = false;
         this.$data._min = 0;
         this.$data._max = 0;
