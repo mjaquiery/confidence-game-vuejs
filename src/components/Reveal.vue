@@ -15,7 +15,7 @@
                   v-bind:style="`
                     ${getPositionString(A.answer)};
                     height: calc(${100/question.answers.length}% - ${question.answers.length / 100}em);
-                    background-color: ${getPlayerColor(A.playerId).saturated};
+                    ${getPlayerColor(A.playerId)};
                     `"
                   :class="A.playerId === playerId? 'you' : 'other'"
           >
@@ -71,10 +71,12 @@ export default {
     },
     getPlayerColor(id) {
       const player = this.players.filter(p => p.id === id);
+      let color = {};
       if (!player.length || typeof player[0].color !== "object")
-        return {saturated: "black"};
+        color = {saturated: "black", base: "black"};
       else
-        return player[0].color;
+        color = player[0].color;
+      return `--saturated: ${color.saturated}; --base: ${color.base};`
     }
   }
 }
@@ -138,13 +140,17 @@ export default {
           flex-direction: column;
           justify-content: center;
           position: relative;
-          border: 1px solid black;
           margin: .1em;
           transform: none;
           /* Support for custom position stuff */
           width: var(--width);
           left: var(--left);
+          /* Support for custom colours */
+          border: 3px solid var(--saturated);
+          background-color: var(--saturated);
           animation: 3s linear slide-bars forwards;
+
+          &.you {border-color: black;}
 
           .label {
             position: absolute;

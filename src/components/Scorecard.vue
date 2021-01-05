@@ -121,7 +121,9 @@ export default {
             color: white;
             opacity: 1;
             &:last-of-type {
-              animation: 1s 3s ease-in appear forwards;
+              animation:
+                      1s 3s ease-in appear forwards,
+                      3s linear hide forwards;
             }
             &[data-points="3"] {
               width: 100%;
@@ -147,6 +149,10 @@ export default {
     @keyframes appear {
       0% {opacity: 0;}
       100% {opacity: 1}
+    }
+    @keyframes hide {
+      0% {opacity: 0}
+      100% {opacity: 0}
     }
   }
 </style>

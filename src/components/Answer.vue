@@ -20,6 +20,7 @@
             :disabled="!okay || locked"
             :class="locked? 'locked' : 'unlocked'">
       <font-awesome-icon :icon="['fas', locked? 'lock' : 'unlock']" />
+      <audio ref="click" src="../assets/click.ogg" preload></audio>
     </button>
   </div>
 
@@ -59,6 +60,8 @@ export default {
   },
   methods: {
     lockInAnswer() {
+      if(!this.locked)
+        this.$refs.click.play();
       if(!this.okay || this.locked) {
         return;
       }
@@ -80,6 +83,7 @@ export default {
       max-width: 5em;
       width: 33%;
       text-align: center;
+      transition: border-color .5s;
     }
     .bad input {
       border-color: lightcoral;
@@ -90,6 +94,7 @@ export default {
       border-radius: 50%;
       background-color: dodgerblue;
       transition: background-color .5s;
+      cursor: pointer;
       svg {
         font-size: 4em;
         padding: .25em;
